@@ -9,6 +9,7 @@ size = width, height = 1000, 1000
 screen = pygame.display.set_mode(size)
 
 White = (255, 255, 255)
+Grey = (70, 70, 70)
 Black = (0, 0, 0)
 
 done = False
@@ -20,6 +21,7 @@ cell_size = cell_size_x, cell_size_y = width / cell_dim_x, height / cell_dim_y
 grid = np.zeros(cell_dim)
 
 is_paused = True
+show_grid = False
 
 def check_cell(prev_grid, x, y):
     if x < 0 or x >= cell_dim_x or y < 0 or y >= cell_dim_y:
@@ -54,8 +56,13 @@ def evolve():
 def clear_screen():
     screen.fill(Black)
 
+def draw_grid():
+    for i in range(cell_dim_x):
+        for j in range(cell_dim_y):
+            pygame.draw.rect(screen, Grey, [i * cell_size_x, j * cell_size_y, cell_size_x, cell_size_y], 1)
+
+
 def draw_cells():
-    color_step_x, color_step_y = 255 / cell_dim_x, 255 / cell_dim_y
     for i in range(cell_dim_x):
         for j in range(cell_dim_y):
             if grid[i][j] == 1:
@@ -77,6 +84,10 @@ def on_key_event(event):
         elif event.key == pygame.K_c:
             print("clearing")
             grid.fill(0)
+        elif event.key == pygame.K_g:
+            global show_grid
+            show_grid = not show_grid
+            print("toggle grid=" + str(show_grid))
 
 
 def on_mouse_click(event):
@@ -116,10 +127,14 @@ while not done:
 
     clear_screen()
 
-    if (not is_paused):
+
+    if not is_paused:
         evolve()
 
     draw_cells()
+
+    if show_grid:
+        draw_grid()
 
     pygame.display.flip()
 
